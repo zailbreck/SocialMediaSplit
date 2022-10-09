@@ -1,0 +1,6 @@
+dst/*
+src/*
+tmp/*
+env
+!.gitignore
+decode.py
