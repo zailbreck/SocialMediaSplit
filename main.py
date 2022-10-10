@@ -1,6 +1,12 @@
 from pyffmpeg import FFmpeg 
 import time, os
 from PIL import Image, ImageFont, ImageDraw
+mkv_src = 'dst/Spy_X_Family/01/part_00.mkv'
+sub_dst = 'tmp/output.srt' 
+
+def extractSubs(src, sub_dst):
+    ff = FFmpeg()
+    ff.options(f"-i {src} -map 0:s:0 {sub_dst}.srt")
 
 def setWM(src, dst, wm):
     ff = FFmpeg()
@@ -21,8 +27,11 @@ def txt2img(text):
     img.save('tmp/wm_tmp.png')
 
 def checkFolder(dst):
-    if not os.path.isdir(dst):
-        os.mkdir(dst)
+    try:
+        if not os.path.isdir(dst):
+            os.mkdir(dst)
+    except:
+        pass
     
 def setWatermark(src,dst):
     tmp = src.split("\\")
@@ -47,6 +56,9 @@ def setWatermark(src,dst):
         # Generate Image
         txt2img(title)
         
+        # Extract Subtitle
+        extractSubs(source, dest+name)
+        
         # Apply WM
         setWM(source, destin, 'tmp\\wm_tmp.png')
     pass
@@ -59,7 +71,10 @@ def main():
     
     for itm in project_path:
         checkFolder(dst_path+itm)
-        lists = os.listdir(src_path + itm) # /src/Movie_Name
+        lists = ''
+        if os.path.isdir(src_path+itm):
+           lists = os.listdir(src_path + itm) # /src/Movie_Name
+        
         for files in lists:
             # extract Name and Extension
             name,ext = os.path.splitext(files)
@@ -83,6 +98,8 @@ def main():
             
 if __name__ == "__main__":
     main()
+    # extractSubs(mkv_src, sub_dst)
+    pass
 
     
     
