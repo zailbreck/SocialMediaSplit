@@ -1,8 +1,12 @@
 from pyffmpeg import FFmpeg 
 import time, os
 from PIL import Image, ImageFont, ImageDraw
-mkv_src = 'dst/Spy_X_Family/01/part_00.mkv'
-sub_dst = 'tmp/output.srt' 
+base = 'dst/Spy_X_Family_WM/01/' 
+
+def makeHardsubs(src, dst, sub):
+    ff = FFmpeg()
+    ff.options(f"-i {src} -vf subtitles={sub} {dst} -y")
+    pass
 
 def extractSubs(src, sub_dst):
     ff = FFmpeg()
@@ -53,14 +57,18 @@ def setWatermark(src,dst):
         source = src+itm
         destin = dest+itm
         print(f"Apply Watermark to -> {base_name} part {name[-2:]}")
+        
         # Generate Image
         txt2img(title)
         
         # Extract Subtitle
         extractSubs(source, dest+name)
-        
+        # print(f"Source  : {source}\nDestination : {dest}\nDestin : {destin}\nPathFix : {dest}{name}.srt")
         # Apply WM
         setWM(source, destin, 'tmp\\wm_tmp.png')
+        
+        # Apply Hardsub
+        makeHardsubs(destin, destin, f"{dest}{name}.srt")
     pass
 
 def main():
